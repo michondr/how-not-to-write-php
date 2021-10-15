@@ -1,0 +1,33 @@
+{varType App\Model\Entities\Todo $todo}
+{block content}
+
+<h1 n:block="title">todo {$todo->title}</h1>
+<p n:ifcontent>
+    {$todo->description}
+</p>
+
+<p style="font-weight: bold">
+    {if $todo->completed === true}
+        splněný
+    {else}
+        nesplněný
+    {/if}
+</p>
+
+
+<p>štítky:
+    {foreach $todo->tags as $tag}
+        {$tag->title},
+    {/foreach}
+</p>
+
+{if $todo->completed === true}
+    <a href="{link complete! id=>$todo->todoId}">označit jako nesplněné</a>
+{else}
+    <a href="{link complete! id=>$todo->todoId}">označit jako splněné</a>
+{/if}
+
+
+<div class="my-4">
+    <a href="{link default}" class="btn btn-light">&larr; zpět na seznam todos</a>
+</div>

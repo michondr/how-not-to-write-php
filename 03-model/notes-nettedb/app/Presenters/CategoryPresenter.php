@@ -77,9 +77,9 @@ class CategoryPresenter extends \Nette\Application\UI\Presenter {
 
         //provedení potřebné akce
         if (!empty($values['category_id'])){
-          //TODO načtení kategorie z databáze a její aktualizace
+             $this->categoriesRepository->updateCategory($values);
         }else{
-          //TODO vytvoření nové kategorie
+             $this->categoriesRepository->saveCategory($values);
         }
 
         //přesměrování na seznam kategorií

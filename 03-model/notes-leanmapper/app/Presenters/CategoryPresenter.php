@@ -3,6 +3,7 @@
 declare(strict_types=1);
 namespace App\Presenters;
 
+use App\Model\Entities\Category;
 use App\Model\Facades\CategoriesFacade;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -19,7 +20,8 @@ class CategoryPresenter extends \Nette\Application\UI\Presenter {
    * Akce pro zobrazení seznamu dostupných kategorií
    */
   public function renderList(){
-    $this->template->categories=$this->categoriesFacade->findCategories(['order'=>'title']);
+      $ategories = $this->categoriesFacade->findCategories(['order' => 'title']);
+      $this->template->categories= $ategories;
   }
 
   /**
@@ -28,11 +30,11 @@ class CategoryPresenter extends \Nette\Application\UI\Presenter {
    * @throws \Nette\Application\BadRequestException
    */
   public function renderShow(int $id):void {
-    try{
+//    try{
       $this->template->category=$this->categoriesFacade->getCategory($id);
-    }catch (\Exception $e){
-      $this->error('Požadovaná kategorie nebyla nalezena', 404);
-    }
+//    }catch (\Exception $e){
+//      $this->error('Požadovaná kategorie nebyla nalezena', 404);
+//    }
   }
   /**
    * Akce pro úpravu jedné kategorie
@@ -40,7 +42,7 @@ class CategoryPresenter extends \Nette\Application\UI\Presenter {
    * @throws \Nette\Application\BadRequestException
    */
   public function renderEdit(int $id):void {
-    try{
+      try{
       $category=$this->categoriesFacade->getCategory($id);
     }catch (\Exception $e){
       $this->error('Požadovaná kategorie nebyla nalezena', 404);
@@ -74,10 +76,16 @@ class CategoryPresenter extends \Nette\Application\UI\Presenter {
 
         //provedení potřebné akce
         if (!empty($values['category_id'])){
-          //TODO načtení kategorie z databáze a její aktualizace
+            $cat = $this->categoriesFacade->getCategory((int)$values['category_id']);
+
         }else{
-          //TODO vytvoření nové kategorie
+            $cat = new Category();
         }
+
+        $cat->description = $values['description'];
+        $cat->title = $values['title'];
+
+        $this->categoriesFacade->saveCategory($cat);
 
         //přesměrování na seznam kategorií
         $this->redirect('list');

@@ -1,0 +1,14 @@
+{varType App\Model\Entities\Note $note}
+{block content}
+
+<h1 n:block="title">Poznámka {$note->title}</h1>
+<p n:ifcontent>
+    {$note->text}
+</p>
+
+<div class="my-4">
+    <a href="{link Category:show $note->category->categoryId}" class="btn btn-light">do kategorie {$note->category->title}</a>
+</div>
+<div class="my-4">
+    <a href="{link list}" class="btn btn-light">&larr; zpět na seznam poznámek</a>
+</div>

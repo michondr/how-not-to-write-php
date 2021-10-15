@@ -3,6 +3,8 @@
 namespace App\Model\Facades;
 
 use App\Model\Entities\Todo;
+use App\Model\Entities\TodoItem;
+use App\Model\Repositories\TodoItemRepository;
 use App\Model\Repositories\TodoRepository;
 
 /**
@@ -13,9 +15,16 @@ class TodosFacade{
   /** @var TodoRepository $todoRepository */
   private $todoRepository;
 
-  public function __construct(TodoRepository $todoRepository){
+  /** @var TodoItemRepository $todoItemRepository */
+  private $todoItemRepository;
+
+    public function __construct(
+      TodoRepository $todoRepository,
+      TodoItemRepository $itemRepository
+  ){
     $this->todoRepository=$todoRepository;
-  }
+        $this->todoItemRepository = $itemRepository;
+    }
 
   /**
    * Metoda pro načtení jednoho úkolu
@@ -59,9 +68,9 @@ class TodosFacade{
   /**
    * Metoda pro uložení položky úkolu
    */
-  public function saveTodoItem(){
-    //TODO implementujte ukládání jednotlivých položek úkolů
-  }
+    public function saveTodoItem(TodoItem &$todoItem):bool {
+        return (bool)$this->todoItemRepository->persist($todoItem);
+    }
 
 
 }

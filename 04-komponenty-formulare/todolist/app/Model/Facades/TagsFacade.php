@@ -55,6 +55,14 @@ class TagsFacade{
     return $this->tagRepository->findAllBy(['order'=>'title'],$offset,$limit);
   }
 
+    /**
+     * @param int[] $tagIds
+     * @return Tag[]
+     */
+  public function findTagsByIds(array $tagIds):array {
+    return $this->tagRepository->findAllBy(['tag_id%in'=>$tagIds]);
+  }
+
   /**
    * Metoda pro zjištění počtu tagů
    * @param array|null $params

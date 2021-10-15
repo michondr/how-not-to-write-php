@@ -6,6 +6,13 @@
     {$category->description}
 </p>
 
+{foreach $category->notes as $note}
+ <div style="background-color: lightblue">
+     <h3>{$note->title}</h3>
+     <p>{$note->text}</p>
+ </div>
+{/foreach}
+
 <div class="my-4">
     <a href="{link list}" class="btn btn-light">&larr; zpět na seznam kategorií</a>
 </div>

@@ -1,198 +1,91 @@
-# 4. Latte, komponenty a formuláře
+# nas ukol
 
-## Opakování
-:point_right:
-- Na minulém cvičení jsme se bavili o přístupech k datům v databázi pomocí Nette Database a pomocí LeanMapperu
-- Co je to objektově-relační mapování?
-- Jaká je úloha *modelu* v návrhovém vzoru MVP?
+Zopakujte si úpravy, které jsme dělali na cvičení (viz prezentace s postupem). Následně se pokuste za domácí úkol aplikaci upravit:
 
-## Ukládání data v databázi - jmenné konvence
-:point_right:
-- doporučuji
-    - používat pro názvy tabulek a jejich sloupců jednotnou velikost písmen (všechna malá či všechna velká)
-    - slova se obvykle oddělují podtržítky (ale jde to teoreticky i bez toho)
-- názvy tabulek
-    - je nutné zvážit, zda chceme názvy v jednotném či množném čísle (např. *article* vs. *articles*)
-        - pro ORM je častější jednotné číslo
-        - z hlediska lidské čitelnosti SQL dotazů je asi vhodnější číslo množné
-- pro většinu tabulek je obvyklé vytvářet umělé primární klíče
-    - z hlediska jmenných konvencí zvažte, zda se bude primární klíč jmenovat např. *article_id*, nebo jen *id*
-    - pojmenování s názvem tabulky je při psaní SQL na první pohled jednoznačnější, ale fungují obě varianty
-        
-### Mappery pro LeanMapper              
-:point_right:
-- pro jednodušší použití jsem pro vás připravil mappery převádějící camelCase názvy entit a jejich properties na podtržítkovou notaci v databázi
-- vyberte si, zda potřebujete mapper pro tabulky pojmenované v jednotném čísle, nebo v množném
-- pro začlenění do projektu můžete použít composer, nebo si [stáhněte zdroják](https://github.com/vojir/LeanMapper-Mappers) a upravte si kód dle vlastní potřeby
-    ```shell script
-    composer require vojir/leanmapper-mappers
-    ```
-- následně třídu vybraného mapperu zaregistrujete v common.neon - např.:
-    ```neon
-    services:
-      - Vojir\LeanMapper\Mappers\CamelcaseUnderdashMapper('App\Model\Entities')
-    ```  
+1) upravte výpis úkolů tak, aby byly vypsány v přehlednější podobě (můžete využít např. tabulku či jinou vhodnou HTML strukturu) a u každého úkolu byl vidět:
+    * stav (vizuálně odlište hotové úkoly např. jejich přeškrtnutím
+    * jednotlivé tagy
+    * deadline, pokud je u úkolu zadaný
+2) stránka s detailem úkolu
+   * na stránce bude vidět název úkolu, jeho tagy,
+   ke každému úkolu doplňte možnost označit jej jako splněný (či případně jako nesplněný)
+   u úkolu bude odkaz, na který když uživatel klikne, změní se stav úkolu
 
-## Flash zprávy
-:point_right:
-- jednoduchý způsob, jak na webu zobrazovat potvrzovací či chybové hlášky (např. "položka byla uložena")
-- lze je generovat jak z presenterů, tak také z komponent
+3) Odevzdejte textový soubor (txt) s URL, pod kterou je funkční aplikace k dispozici na serveru.
+Pokud by se vám některá část nepodařila, je možné odevzdat i jen částečné řešení...
 
-```php
-$this->flashMessage('zpráva', 'error'); //2. parametr je volitelný, používá se pro odlišení typu zprávy - např. info, warning, error
-```
+[výsledek (implementace) běží zde](+)
 
-## Komponenty
-:point_right:
-- komponenta = kousek aplikace, který se "stará sám o sebe"
-    - je vykreslitelný na místě, kde jej chceme použít
-    - umí reagovat na vlastní události (požadavky na zobrazení, signály)
-    - můžeme ho použít na různých místech v aplikaci
-- příkladem může být například hlasování v anketě, menu, zobrazení přihlášeného uživatele, formulář...
-- dnes si vysvětlíme jen jejich základy a poté se podrobněji podíváme na formuláře
+# co jsem dotáhl navíc
+* editaci todo včetně multiselectu na tagy
+* vytvoření nového tagu
+* rozdělení todos na nesplěné a splněné
+* do seznamu tagů přidal i description
+* do seznamu přidal možnost na okamžité odškrtnutí nebo vrácení do původního stavu (klik na title), protože jsem to udělal dřív než jsem si přečetl v zadání že to má být v detailu (show routa)
 
-### Vytváření a použití komponent
-:point_right:
-- dobrou praxí je oddělit komponenty do samostatného adresáře, nejčastěji **app/Components**
-    - komponentu zabalíme do samostatného adresáře, ve kterém bude třída komponenty a její šablony
-- komponenta si může vyžádat libovolné potřebné závislosti (fasády atp.)
+# na co jsem se totálně vykašlal
+* kvalita, čitelnost, energie dotáhnout to do nějaké kvality, hledání error stavů, validace 
 
-:point_right:
-- v presenteru máme definovanou metodu **createComponentJmenoKomponenty**, např.:
-    ```php
-    protected function createComponentDemo():DemoControl {
-      return new DemoControl();
-    } 
-    ```
-- pro vytvoření komponenty se používá rozhraní, které nám předá patřičné závislosti a komponentu vytvoří (pokud tedy komponenta nějaké závislosti má)
-- v ostatních metodách presenteru (např. v renderXXX či actionXXX) získáme komponentu pomocí:
-    ```php
-    $demo = $this->getComponent('demo');
-    $demo->text='Lorem ipsum...';
-    ```
+# moje poznámky
 
-:point_right:  
-- v šabloně můžeme komponentu vykreslit pomocí:
-    ```latte
-    {control demo} {*vykreslí komponentu demo pomocí její metody render()*}
-    {control demo} {*vykreslí komponentu demo pomocí její metody render()*}
-    {control demo:hello 'good morning'} {*vykreslí komponentu demo pomocí její metody renderHello s předáním parametru*}
-    {*pozor, při předání parametrů jako pole najdeme v render metodě toto pole celé v 1. parametru! (rozdíl oproti presenterům)*}
-    ```
-  
-:blue_book:
-- [ukázkový příklad DemoControl](./DemoControl)
-- [Komponenty na webu Nette](https://doc.nette.org/cs/3.1/components)  
+moje výkřiky do tmy když jsem se to dělal:
 
-## Formuláře
-:point_right:  
-- určitě už jste se dost natrápili s psaním kontrol k formulářům a jejich zpracováním, ale v Nette je formulář prostě jedním z druhů komponent
-- formulář seskládáme v PHP, přičemž k jednotlivým prvkům (vstupním polím, tlačítkům atp.) definujeme jejich vlastnosti a HTML formulář s kontrolami se z toho seskládá sám
-- formulář už jsme používali i na minulé hodině (tady), ale dnes se na ně podíváme podrobněji
-- když načteme do stránky patřičný javascriptový soubor, fungují kontroly jak v javascriptu, tak v PHP
+musím říct, že dokumentace veliký trash. berte to prosím jako můj osobní názor - pokud dibi ještě není mrtvá, tak brzy umře.
 
-:blue_book:
-- [Formuláře na webu Nette](https://doc.nette.org/cs/3.1/forms)
+1 krok - řekl jsem si že seřadím todočka z DB podle toho kdy mají deadline desc, secondary podle toho v jakém pořadí vyly vytvořeny - v sql jednoduše jako order by deadline desc, created desc. (pak jsem zjistil že nemáme slupec "created_at)
+* hledám jak zadat order. ta metoda je totálně magická 
+ 
+[![](https://i.imgur.com/F3Y9L9l.png )](https://i.imgur.com/F3Y9L9l.png)
 
-### Vytvoření jednoduchého formuláře
-:point_right:
-1. vytvoříme instanci třídy **Nette\Application\UI\Form**
-2. přidáme jednotlivá pole, tlačítka atp.
-    - můžeme rozhodnout, zda je prvek povinný, nebo volitelný (pomocí **setRequired**)
-    - pomocí **addRule** přidáváme validační pravidla 
-    - pomocí **addFilter** můžeme doplnit ošetření vstupu
-3. přidáme reakci na odesílací tlačítka
+* tak jdu hledat dokumentaci v kódu. no doprčic, tohle používá dibi 
+ 
+[![](https://i.imgur.com/BADgaLZ.png )](https://i.imgur.com/BADgaLZ.png)
 
-:blue_book:
-- [Formulářové prvky](https://doc.nette.org/cs/3.1/form-controls)
-- [Validace](https://doc.nette.org/cs/3.1/form-validation)
+* zavzpomínám na první práci, zamáčknu slzu a jdu googlit
+* (v téhle pozici jsem naštvanej že jsem jen z kódu nemohl zjistit jak se to používá)
+* dostanu se na https://apidoc.intm.org/tharos/leanmapper/v3.4.1/namespace-LeanMapper.html, hledám podle ctrl+f, hledám v search baru, nejde potvrdit nikam mě to neredirectne. neřekne mi že nemá vyýsledky, jen tupě nic nedělá. umažu pár znaků, něco se začne ukazovat- aha načítá to když píšeš, ale to co hledám tam není
+* tak nic, jdu zpět, třeba dibi fluent bude něco vědět - nemůžu se proklikat na description/definici funkce jak to funguje a jak to zapsat aby to udělalo to sql co chci
+* pro info jak by to fungovalo když bych to řešil v doctirne 
+ 
+[![](https://i.imgur.com/A3a5v1X.png )](https://i.imgur.com/A3a5v1X.png)
 
-:point_right:
-```php
-use Nette\Application\UI\Form;
+* hunt continues - jdu googlit v češtině, protože lidi které chceme učit programovat na téhle škole uričtě nikdy nebudou pracovat anglicky... 🙄
+    * jsme tak rozvinutá businesss škola, učíme se jazyky, ale informace se tady učíme pořád hleda v češtině - v čr je 10 milionů lidí, anglicky mluví 1.35 miliardy lidí na světě. hledat informace v češtině je nesmysl
+* dostanu se an nějaký random thread na foru co jsem nikdy neviděl, s jednou otázkou a jednou odpovědí 
+ 
+[![](https://i.imgur.com/5LN8bO1.png )](https://i.imgur.com/5LN8bO1.png)
 
-$form=new Form();
-
-$form->addText('name','Jméno:')
-  ->setRequired('Vyplňte jméno!');
-
-$form->addEmail('email','E-mail:')
-  ->setRequired('Vyplňte e-mail!')
-  ->addFilter(function($value){
-    return mb_strtolower($value);
-  });
-
-$form->addInteger('age','Věk')
-  ->addRule(Form::RANGE, 'Věk musí být v rozmezí od %d do %d.', [15, 40]);
-
-$password=$form->addPassword('password', 'Heslo:');
-$password
-  ->setRequired('Musíte vyplnit heslo!')
-  // pokud není heslo delší než 8 znaků, musí obsahovat číslici
-  ->addCondition($form::MAX_LENGTH, 8)
-    ->addRule($form::PATTERN, 'Musí obsahovat číslici', '.*[0-9].*');;
-
-$form->addPassword('password2', 'Heslo znovu:')
-  ->addRule(Form::EQUAL, 'Hesla se neshodují!', $password);
-
-$form->addSubmit('submit','odeslat')
-  ->onClick[]=function(SubmitButton $submitButton){
-    $values = $submitButton->form->getValues('array'); //vrací ošetřené hodnoty
-    //TODO
-  };
-
-$form->addSubmit('cancel','zrušit')
-  ->setValidationScope([])//zrušíme validace
-  ->onClick[]=function(SubmitButton $submitButton){
-    //TODO
-  };
-```
-
-### Získání dat z formuláře, nastavení výchozích hodnot
-:point_right:
-- pro získání dat máme k dispozici metody ```getValues()``` a ```getUnsafeValues()```
-    - návratovou hodnotou může být pole či objekt (ArrayHash, nebo instance námi definované třídy)   
-- pro zadání výchozích dat (např. když chceme editovat záznam, který už v databázi je) použijeme metodu ```setDefaults()``` 
-
-```php
-$valuesArr = $form->getValues('array');
+* kde jsou tak hodní že mi ukážou jak by to ohlo fungovat, a odkážou mě do kódů kde to můžu najít, a voila, jsme zpět na Fluent.php
 
 
-class RegistrationFormData{
-  public string $name;
-  public string $email;
-  public int $age;
-  public string $password;
-  public string $password2; 
-}
-$values = $form->getValues(RegistrationFormData::class);
-```
+výsledek:
+* nezjistil jsem PROČ se to tak děje
+* nezjistil jsem jak to funguje, stejně si budu muset chvíli hrát s nějakým blackboxem abych odhadl JAK to to teda funguje a používá se
+* vyhodil jsem 20 minut svého života. takhle se pozná špatný kód - krade z lidí životní energii, čas, peníze a štěstí.
+* dobrý kód je self explanatory, nebo se dá najít řešení
+ 
 
-### Vykreslení formuláře v šabloně
-:point_right:
-- je fajn nechat vykreslení na automatice (můžeme použít také jiný renderer, např. pro bootstrap)
-    ```{control registrationForm}```
-- volitelně ale můžeme vykreslovat formulář také zcela ručně pomocí latte maker
 
-### Formuláře jako samostatné komponenty
-:point_right:
-- z třídy Form odvodíme vlastní třídu, volitelně bychom případně mohli formulář vložit jako vnitřní komponentu do té námi vytvořené
-- v praxi se mi osvědčilo, aby se o uložení dat atp. postarala komponenta formuláře, následně pak v presenteru již doplníme jen zobrazení hlášek a přesměrování
-- šablonu takovéto komponenty neřešíme, formulář se umí sám vykreslit 
-- pro vytvoření komponenty i se závislostmi využijeme možnost definovat jen interface, tovární třídu nám Nette vygeneruje samo
+2) krok, přidávám deadline abych mohl vizualně vidět že to maká
+* přidám do kódu (předpokládám že latte ma date filtery, padne to 
+ 
+[![](https://i.imgur.com/iHEJ9ta.png )](https://i.imgur.com/iHEJ9ta.png)
 
-## Ukázkový příklad todolist
-:mega:
-1. stáhněte si **[SQL soubor](./todolist-db.sql)** s exportem databáze a naimportujte jeho obsah do MariaDB (nebojte, s předchozím příkladem nijak nekoliduje)
-2. stáhněte si složku **[todolist](./todolist)** s ukázkovým projektem, nahrajte jej na server (nezapomeňte na úpravu práv k adresářům log a temp)
-3. otevřete si ukázkové projekty ve vývojovém prostředí
-4. v souboru **config/local.neon** přístupy k databázi
+    * to je přesně ten důvod, proč jsem se na hodině ptal, proč nevracíme \DateTimeImmutable - to je univerzál
+* tak jinudy - co to toto, proč to nevidí? 
+ 
+[![](https://i.imgur.com/3RlKci1.png )](https://i.imgur.com/3RlKci1.png)
 
-### Úkoly pro procvičení
-:mega:
-1. podívejte se na strukturu databáze a doplňte do projektu entitu **TodoItem**, doplňte příslušný repozitář a chybějící metody do **TodosFacade**
-2. akce Todo:default by měla vypisovat seznam všech úkolů se znázorněním jejich stavu a tagů
-3. podívejte se na to, jak je definován formulář **TagEditForm**
+* aha, špatný import.... mg, nechápu jak je to related k té chybě, ale dobře
+ 
+[![](https://i.imgur.com/h16kzLc.png )](https://i.imgur.com/h16kzLc.png)
 
-:orange_book:
-- [Prezentace s postupem úprav todolistu](./todolist-todoitem-reseni.pptx)
+
+* přidám si tabulku, chci odděleně pole takových a makových
+   * jsme zase na začátku u toho jak se používají ty find funkce fakt nelogické
+ 
+[![](https://i.imgur.com/9pofJ8R.png )](https://i.imgur.com/9pofJ8R.png)
+
+* dal jsem se do formuláře, a nad tímhle mi stála hlava. proč, prosím proč. jestli mi to někdo vysvětlíte, budu nesmírně rád
+
+[![](https://i.imgur.com/5CkJA9a.png )](https://i.imgur.com/5CkJA9a.png)

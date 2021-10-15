@@ -17,10 +17,12 @@ services:
 	- App\Router\RouterFactory::createRouter
 
 	- LeanMapper\Connection(%database%)
-	- Vojir\LeanMapper\Mappers\CamelcaseUnderdashMapper('App\Model\Entities')
+#	- App\Model\Mappers\StandardMapper('App\Model\Entities')
 	- LeanMapper\DefaultEntityFactory
+	- Vojir\LeanMapper\Mappers\CamelcaseUnderdashPluralMapper('App\Model\Entities')
 
 	- App\Model\Facades\CategoriesFacade
+	- App\Model\Facades\NoteFacade
 
-	- App\Model\Repositories\CategoryRepository
-	- App\Model\Repositories\NoteRepository
+	- App\Model\Repositories\CategoriesRepository
+	- App\Model\Repositories\NotesRepository
