@@ -72,6 +72,7 @@ class NewPasswordForm extends Form{
 
         $user->password=$this->passwords->hash($values['password']); //heslo samozřejmě rovnou hashujeme :)
         $this->usersFacade->saveUser($user);
+        $this->usersFacade->deleteForgottenPasswordsByUser($user);
 
         $this->onFinished('Heslo bylo změněno.');
       };

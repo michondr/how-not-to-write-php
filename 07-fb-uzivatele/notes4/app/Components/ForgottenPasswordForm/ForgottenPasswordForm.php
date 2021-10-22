@@ -47,8 +47,28 @@ class ForgottenPasswordForm extends Form{
       ->setHtmlAttribute('class','btn btn-primary')
       ->onClick[]=function(SubmitButton $button){
 
-        //TODO chceme uživateli poslat e-mail s odkazem pro změnu hesla
-        //odkaz bude na akci User:renewPassword s parametry user a code
+        try{
+            $user = $this->usersFacade->getUserByEmail($this->values->email);
+        } catch (\Exception $e){
+            $this->onFinished('Pokud je email registrovaný, poslali jsme link na reset hesla (nemame)');;
+            return;
+        }
+
+        $forgottenPassword = $this->usersFacade->saveNewForgottenPasswordCode($user);
+        $mailLink = $this->getPresenter()->link('//User:renewPassword', ['user' => $user->userId, 'code' => $forgottenPassword->code]);
+
+
+        $mail = new Nette\Mail\Message();
+        $mail->setFrom('mico00@vse.cz', 'Tvoje máma');
+        $mail->addTo($this->values->email);
+        $mail->setSubject('Reset password');
+        $mail->setHtmlBody('go to <a href="'.$mailLink.'">here</a> to reset your password ');
+
+        $mailer = new Nette\Mail\SmtpMailer();
+        $mailer->send($mail);
+
+        $this->onFinished('Pokud je email registrovaný, poslali jsme link na reset hesla (mame)');;
+
 
         $this->onFinished();
       };
