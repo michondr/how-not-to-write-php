@@ -12,7 +12,7 @@ class ForgottenPasswordRepository extends BaseRepository{
    * Metoda pro smazání již neplatných záznamů
    */
   public function deleteOldForgottenPasswords(){
-    $this->connection->nativeQuery('SELECT * FROM `forgotten_password` WHERE created < (NOW() - INTERVAL 1 HOUR)');
+    $this->connection->nativeQuery('DELETE FROM `forgotten_password` WHERE created < (NOW() - INTERVAL 1 HOUR)');
   }
 
 }
